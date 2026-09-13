@@ -1,7 +1,6 @@
-from ast import match_case
+from ast import arg
 from multiprocessing import Value
 import threading
-import time
 import pyvjoy
 import serial
 import serial.tools.list_ports
@@ -12,6 +11,12 @@ VJOY_AXIS_REST=0x4000
 
 WHEEL_COM_BAUD=115200
 WHEEL_ROT_PULSE=0.03    # 30ms rotary encoder down->up pulse
+
+
+BRIDGE_ENABLED=True
+BRIDGE_PORT="COM20"        # the com0com port NOT used by SimHub
+BRIDGE_BAUD=115200         # match whatever baud SimHub is configured to use
+BRIDGE_READ_CHUNK=256
 
 
 def menu_selection():
@@ -84,8 +89,32 @@ def init_vjoy_values(wheel: pyvjoy.VJoyDevice):
     wheel.set_axis(pyvjoy.HID_USAGE_Y, VJOY_AXIS_REST)
     wheel.set_axis(pyvjoy.HID_USAGE_Z, VJOY_AXIS_REST)
 
+def process_simhub(virtual_port: str, r_ser: serial.Serial, thread_stop: threading.Event):
+    try:
+        v_ser=serial.Serial(virtual_port, BRIDGE_BAUD)
+
+    except serial.SerialException:
+        print(f"[SimHub bridge] Cannot open com0com port {BRIDGE_PORT}. Continue without bridge.")
+        return
+
+    print(f"SimHub bridge has been connected to com0com port {BRIDGE_PORT}.")
+
+    try:
+        while not thread_stop.is_set():
+            line=v_ser.readline().decode().strip()
+            try:
+                r_ser.write(f"{line}\r\n".encode())
+            except serial.SerialException:
+                print(f"[SimHub bridge] Communication error.")
+
+    finally:
+        v_ser.close()
+        print("[SimHub bridge] Exiting.")
 
 def main():
+    thread_stop=threading.Event()
+    com0com_thread=None     # to not close the thread forcefully
+
     try:
         wheel=pyvjoy.VJoyDevice(1)
         wheel.reset()
@@ -95,12 +124,20 @@ def main():
         ser=serial.Serial(port, WHEEL_COM_BAUD)
         print(f"\nConnected to {ser.name}")
 
+        if BRIDGE_ENABLED:
+            com0com_thread=threading.Thread(target=process_simhub, args=(BRIDGE_PORT, ser, thread_stop), daemon=True)
+            com0com_thread.start()
+
         while True:
             process_line(ser.readline().decode().strip(), wheel)
 
     except (KeyboardInterrupt, serial.SerialException):
         try:
             print("Disconnecting...")
+
+            thread_stop.set()
+            if com0com_thread is not None:
+                com0com_thread.join(timeout=1)
 
             wheel.reset()
             ser.close()
