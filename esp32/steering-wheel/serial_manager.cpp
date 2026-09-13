@@ -83,6 +83,7 @@ void serial_manager::begin(int p_baudrate){
     bufsize=0;
 
     Serial.begin(baudrate);
+    Serial.println();
 }
 
 void serial_manager::update(){

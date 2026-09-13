@@ -109,19 +109,19 @@ void setup() {
 
     rot.begin();
     rot.set_on_clockwise([](){
-        Serial.println("CO;rot;cw");
+        Serial.println("CO|rot|cw");
     });
     rot.set_on_counterclockwise([](){
-        Serial.println("CO;rot;ccw");
+        Serial.println("CO|rot|ccw");
     });
 
     btn_rot.begin();
     btn_rot.set_on_press([](){
-        Serial.println("CO;btn;12;down");
+        Serial.println("CO|btn|12|down");
     });
 
     btn_rot.set_on_release([](){
-        Serial.println("CO;btn;12;up");
+        Serial.println("CO|btn|12|up");
     });
 
     ss.set_digit(0, '0');
@@ -135,15 +135,15 @@ void setup() {
     lcd.clear();
 
     matrix.set_on_press_all([](uint8_t row, uint8_t col) {
-        Serial.print("CO;btn;");
+        Serial.print("CO|btn|");
         Serial.print(String(row * col_pins.size() + col));
-        Serial.println(";down");
+        Serial.println("|down");
     });
 
     matrix.set_on_release_all([](uint8_t row, uint8_t col) {
-        Serial.print("CO;btn;");
+        Serial.print("CO|btn|");
         Serial.print(String(row * col_pins.size() + col));
-        Serial.println(";up");
+        Serial.println("|up");
     });
 
     matrix.begin();
