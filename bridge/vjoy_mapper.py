@@ -1,5 +1,3 @@
-from ast import arg
-from multiprocessing import Value
 import threading
 import pyvjoy
 import serial
@@ -114,6 +112,8 @@ def process_simhub(virtual_port: str, r_ser: serial.Serial, thread_stop: threadi
 def main():
     thread_stop=threading.Event()
     com0com_thread=None     # to not close the thread forcefully
+    wheel=None
+    ser=None
 
     try:
         wheel=pyvjoy.VJoyDevice(1)
@@ -139,8 +139,12 @@ def main():
             if com0com_thread is not None:
                 com0com_thread.join(timeout=1)
 
-            wheel.reset()
-            ser.close()
+            if wheel is not None:
+                wheel.reset()
+
+            if ser is not None:
+                ser.close()
+                
         except UnboundLocalError:
             pass
 
