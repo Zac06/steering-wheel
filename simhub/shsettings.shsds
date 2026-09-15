@@ -1,0 +1,78 @@
+{
+  "AutomaticReconnect": false,
+  "SerialPortName": "COM30",
+  "StartupDelayMs": 0,
+  "IsConnecting": false,
+  "IsEnabled": true,
+  "LogIncomingData": false,
+  "IsConnected": true,
+  "BaudRate": 115200,
+  "DtrEnable": false,
+  "RtsEnable": false,
+  "EditorExpanded": true,
+  "Name": "Custom Serial device",
+  "Description": "Serial device",
+  "LastErrorDate": "2026-09-13T18:36:33.8923118+02:00",
+  "LastErrorMessage": null,
+  "IsFreezed": false,
+  "SettingsBuilder": {
+    "Settings": [],
+    "IsEditMode": false,
+    "Prefix": null
+  },
+  "OnConnectMessage": {
+    "JSExt": 0,
+    "Interpreter": 1,
+    "Expression": ""
+  },
+  "OnDisconnectMessage": {
+    "Expression": ""
+  },
+  "UpdateMessages": [
+    {
+      "Message": {
+        "JSExt": 0,
+        "Interpreter": 1,
+        "Expression": "return 'RP'+'|'+$prop('Rpms')+'|'+$prop('MaxRpm')+'\\n'"
+      },
+      "IsEnabled": true,
+      "MaximumFrequency": 10
+    },
+    {
+      "Message": {
+        "JSExt": 0,
+        "Interpreter": 1,
+        "Expression": "return 'VE'+'|'+$prop('SpeedLocal')+'|'+\r\n\t\t\t\t$prop('MaxSpeedLocal')+'|'+\r\n\t\t\t\t$prop('SpeedLocalUnit')+'\\n'"
+      },
+      "IsEnabled": true,
+      "MaximumFrequency": 0
+    },
+    {
+      "Message": {
+        "JSExt": 0,
+        "Interpreter": 1,
+        "Expression": "return 'FU'+'|'+\r\n$prop('DataCorePlugin.Computed.Fuel_CurrentLapConsumption')+'|'+\r\n$prop('DataCorePlugin.Computed.Fuel_LastLapConsumption')+'|'+\r\n$prop('DataCorePlugin.Computed.Fuel_LitersPerLap')+'|'+\r\n$prop('DataCorePlugin.Computed.Fuel_RemainingLaps')+'|'+\r\n$prop('Fuel')+'|'+\r\n$prop('FuelPercent')+'|'+\r\n$prop('FuelUnit')+'\\n'"
+      },
+      "IsEnabled": true,
+      "MaximumFrequency": 0
+    },
+    {
+      "Message": {
+        "JSExt": 0,
+        "Interpreter": 1,
+        "Expression": "return 'LA'+'|'+\r\n$prop('CurrentLap')+'|'+\r\n$prop('TotalLaps')+'|'+\r\n$prop('CurrentLapTime')+'|'+\r\n$prop('LastLapTime')+'|'+\r\n$prop('BestLapTime')+'|'+\r\n$prop('CurrentSectorIndex')+'|'+\r\n$prop('Sector1Time')+'|'+\r\n$prop('Sector2Time')+'\\n'"
+      },
+      "IsEnabled": true,
+      "MaximumFrequency": 0
+    },
+    {
+      "Message": {
+        "JSExt": 0,
+        "Interpreter": 1,
+        "Expression": "return 'GE'+'|'+\r\n$prop('Gear')+'|'+\r\n$prop('CarSettings_MaxGears')+'|'+\r\n$prop('DataCorePlugin.ExternalScript.BlinkingGearUP')+'\\n'"
+      },
+      "IsEnabled": true,
+      "MaximumFrequency": 0
+    }
+  ]
+}
