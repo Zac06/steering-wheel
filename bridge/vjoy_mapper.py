@@ -1,7 +1,9 @@
 import threading
+from typing import LiteralString
 import pyvjoy
 import serial
 import serial.tools.list_ports
+import time
 
 VJOY_AXIS_MAX=0x8000
 VJOY_AXIS_MIN=0x1
@@ -10,11 +12,12 @@ VJOY_AXIS_REST=0x4000
 WHEEL_COM_BAUD=115200
 WHEEL_ROT_PULSE=0.03    # 30ms rotary encoder down->up pulse
 
-
 BRIDGE_ENABLED=True
 BRIDGE_PORT="COM20"        # the com0com port NOT used by SimHub
 BRIDGE_BAUD=115200         # match whatever baud SimHub is configured to use
 BRIDGE_READ_CHUNK=256
+
+DEBUG=False
 
 
 def menu_selection():
@@ -53,7 +56,6 @@ def process_line(line: str, wheel: pyvjoy.VJoyDevice):
 
     match splitted[0]:
         case "CO":
-
             match splitted[1]:
                 case "rot":
                     if splitted[2]=="cw":
@@ -77,10 +79,13 @@ def process_line(line: str, wheel: pyvjoy.VJoyDevice):
                     wheel.set_axis(pyvjoy.HID_USAGE_X, map_range(value, 0, 1023, VJOY_AXIS_MIN, VJOY_AXIS_MAX))
 
                 case _:
-                    print("Unknown control message")
+                    if DEBUG:
+                        print(f"Malformed 'CO' message: {splitted}")
 
         case _:
-            print("Unknown serial message")
+            if DEBUG:
+                print(f"Malformed serial message: {splitted}")
+                
           
 def init_vjoy_values(wheel: pyvjoy.VJoyDevice):
     wheel.set_axis(pyvjoy.HID_USAGE_X, VJOY_AXIS_REST)
@@ -99,9 +104,9 @@ def process_simhub(virtual_port: str, r_ser: serial.Serial, thread_stop: threadi
 
     try:
         while not thread_stop.is_set():
-            line=v_ser.readline().decode().strip()
+            line=v_ser.readline()
             try:
-                r_ser.write(f"{line}\r\n".encode())
+                r_ser.write(line)
             except serial.SerialException:
                 print(f"[SimHub bridge] Communication error.")
 
@@ -128,8 +133,22 @@ def main():
             com0com_thread=threading.Thread(target=process_simhub, args=(BRIDGE_PORT, ser, thread_stop), daemon=True)
             com0com_thread.start()
 
+        data=""
+
         while True:
-            process_line(ser.readline().decode().strip(), wheel)
+            if ser.in_waiting > 0:
+                data+=ser.read(ser.in_waiting).decode(errors="ignore")
+
+                while "\n" in data:
+                    line, data=data.split("\n", 1)
+                    line=line.strip()
+
+                    process_line(line, wheel)
+
+                # print(data)
+
+            else:
+                time.sleep(0.01)
 
     except (KeyboardInterrupt, serial.SerialException):
         try:

@@ -160,7 +160,7 @@ void loop() {
     arduino_pot::update();
 
     if (arduino_pot::changed()) {
-        Serial.print("CO;steer;");
+        Serial.print("CO|steer|");
         Serial.println(arduino_pot::get());
     }
 

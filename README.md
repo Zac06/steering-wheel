@@ -28,7 +28,10 @@ Software of a DIY simracing steering wheel.
     ```
     pip install -r bridge/requirements.txt
     ```
-
+- Open the Arduino IDE on the `esp32/steering-wheel` project
+- Flash the ESP32 
+- Open the Arduino IDE on the `arduino/reader` project
+- Flash the Arduino (UNO/Nano) 
 - You're all set! Run the `bridge/vjoy_mapper.py` script with Python and then run the serial plugin on SimHub on the `COM30` port. 
 
 Now run your favourite game and enjoy!
