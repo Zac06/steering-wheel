@@ -1,6 +1,17 @@
 # steering-wheel
 Software of a DIY simracing steering wheel.
 
+## Pictures
+
+![Front pic](assets/pic3.png "Front view")
+![Top pic](assets/pic1.png "Top view")
+
+## Wiring scheme
+
+Here is a Fritzing screenshot of an initial prototype wiring scheme (no steering included). You can also download the [Fritzing circuit file](assets/scheme.fzz).
+
+![Prototype image](assets/breadboard.png)
+
 ## Requirements
 
 - Windows 10 (working) or 11 (untested)
